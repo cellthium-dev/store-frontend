@@ -1,5 +1,6 @@
 import { Badge } from "@/_components/ui/badge"
 import { cn } from "@lib/utils"
+import AnimatedCounter from "@modules/animation/animated-counter"
 import {
   Car,
   CheckCircle,
@@ -84,7 +85,9 @@ export default function AboutUs({ className }: AboutUsProps) {
           <Badge className="w-fit h-10 text-base font-mono uppercase">
             Founded
           </Badge>
-          <span className="text-8xl">2018</span>
+          <span className="text-8xl">
+            <AnimatedCounter from={0} to={2018} />
+          </span>
 
           <p className="font-light">
             A diverse and interdisciplinary team with extensive experience in
@@ -96,7 +99,9 @@ export default function AboutUs({ className }: AboutUsProps) {
             Reduced footprint
           </Badge>
           <div>
-            <span className="text-8xl">90</span>
+            <span className="text-8xl">
+              <AnimatedCounter from={0} to={90} />
+            </span>
             <span className="text-7xl font-light">%</span>
           </div>
 
@@ -109,7 +114,9 @@ export default function AboutUs({ className }: AboutUsProps) {
             Capacity
           </Badge>
           <div>
-            <span className="text-8xl">30</span>
+            <span className="text-8xl">
+              <AnimatedCounter from={0} to={30} />
+            </span>
             <span className="text-7xl font-light">GWh</span>
           </div>
           <p className="font-light">
@@ -118,7 +125,7 @@ export default function AboutUs({ className }: AboutUsProps) {
         </div>
       </div>
 
-      <div className="flex justify-center flex-col items-center ">
+      <div className="flex justify-center flex-col items-center my-20">
         <h1 className="text-center text-3xl font-light my-12">
           High quality components
         </h1>
@@ -153,7 +160,7 @@ export default function AboutUs({ className }: AboutUsProps) {
         </p>
       </div>
 
-      <div className="flex justify-center flex-col items-center my-16">
+      <div className="flex justify-center flex-col items-center my-20">
         <div className="my-8 grid gap-8">
           <h1 className="text-center text-3xl font-light">Broad appliances</h1>
           <p>
@@ -178,7 +185,7 @@ export default function AboutUs({ className }: AboutUsProps) {
         </div>
       </div>
 
-      <div className="flex gap-x-16">
+      <div className="flex gap-x-16 my-20">
         <div>
           <h3 className="text-4xl uppercase">The Cellthium Way</h3>
           <p>
