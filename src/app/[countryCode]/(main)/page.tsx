@@ -1,10 +1,11 @@
-import { Metadata } from "next"
-
 import { listCollections } from "@lib/data/collections"
 import { getRegion } from "@lib/data/regions"
+import CircleBackground from "@modules/animation/circle-background"
 import AboutUs from "@modules/home/components/about-us"
 import Hero from "@modules/home/components/hero"
 import MaxWidthWrapper from "app/_components/max-width-wrapper"
+import { ReactLenis } from "lenis/dist/lenis-react"
+import { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: "Medusa Next.js Starter Template",
@@ -31,10 +32,22 @@ export default async function Home(props: {
 
   return (
     <>
-      <MaxWidthWrapper>
-        <Hero />
-        <AboutUs />
-      </MaxWidthWrapper>
+      <ReactLenis root>
+        <div className="relative inset-0 -z-10 overflow-x-clip">
+          <CircleBackground
+            r={80}
+            blur
+            className={
+              "bg-gradient-to-r from-[#0172AF] to-[#74FEBD] mix-blend-lighten"
+            }
+          />
+        </div>
+
+        <MaxWidthWrapper>
+          <Hero />
+          <AboutUs />
+        </MaxWidthWrapper>
+      </ReactLenis>
     </>
   )
 }
