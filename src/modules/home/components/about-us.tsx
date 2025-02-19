@@ -129,35 +129,40 @@ export default function AboutUs({ className }: AboutUsProps) {
         <h1 className="text-center text-3xl font-light my-12">
           High quality components
         </h1>
-        <div className="w-fit grid lg:grid-cols-2 gap-4">
-          {elements.map((element) => (
-            <div className="flex flex-col gap-4 w-80 h-80" key={element.name}>
-              <Image
-                src={element.icon}
-                width={70}
-                height={70}
-                alt={element.alt}
-              />
 
-              <h3 className="uppercase font-mono font-bold">{element.name}</h3>
-              <p>{element.description}</p>
-            </div>
-          ))}
+        <div className="grid grid-cols-2 relative">
+          <div className="mt-10 col-span-1 w-fit grid grid-cols-1 gap-4">
+            {elements.map((element) => (
+              <div className="flex flex-col gap-4 h-[75vh]" key={element.name}>
+                <Image
+                  src={element.icon}
+                  width={150}
+                  height={150}
+                  alt={element.alt}
+                />
+
+                <h3 className="uppercase font-mono font-bold text-4xl">
+                  {element.name}
+                </h3>
+                <p>{element.description}</p>
+              </div>
+            ))}
+          </div>
+          <p className="text-2xl h-fit sticky top-56 p-8 text-justify">
+            Our battery modules use{" "}
+            <span className="border-b-2 border-green-400 font-mono tracking-tight">
+              lithium-nickel-manganese-cobalt
+            </span>{" "}
+            <code className="font-bold">NMC</code> and{" "}
+            <span className="font-mono border-b-2 border-green-400 tracking-tight">
+              lithium-iron-phosphate
+            </span>{" "}
+            <code className="font-bold">
+              LiFePO<sub>4</sub>
+            </code>{" "}
+            for maximum performance and safety.
+          </p>
         </div>
-        <p>
-          Our battery modules use{" "}
-          <span className="border-b-2 border-green-400 font-mono tracking-tight">
-            lithium-nickel-manganese-cobalt
-          </span>{" "}
-          <code className="font-bold">NMC</code> and{" "}
-          <span className="font-mono border-b-2 border-green-400 tracking-tight">
-            lithium-iron-phosphate
-          </span>{" "}
-          <code className="font-bold">
-            LiFePO<sub>4</sub>
-          </code>{" "}
-          for maximum performance and safety.
-        </p>
       </div>
 
       <div className="flex justify-center flex-col items-center my-20">
