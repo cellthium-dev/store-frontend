@@ -34,11 +34,11 @@ const products: { title: string; href: string; description: string }[] = [
 
 export default function NavItems() {
   return (
-    <div className="flex h-full items-center">
+    <div className="flex h-full items-center uppercase">
       <NavigationMenu>
         <NavigationMenuList className="lg:flex lg:gap-x-8">
           <NavigationMenuItem>
-            <NavigationMenuTrigger className="bg-transparent">
+            <NavigationMenuTrigger className="uppercase">
               About us
             </NavigationMenuTrigger>
             <NavigationMenuContent>
@@ -69,7 +69,7 @@ export default function NavItems() {
             </NavigationMenuContent>
           </NavigationMenuItem>
           <NavigationMenuItem>
-            <NavigationMenuTrigger className="bg-transparent">
+            <NavigationMenuTrigger className="bg-transparent uppercase">
               Products
             </NavigationMenuTrigger>
             <NavigationMenuContent>
