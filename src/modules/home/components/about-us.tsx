@@ -1,15 +1,8 @@
 import { Badge } from "@/_components/ui/badge"
 import { cn } from "@lib/utils"
 import AnimatedCounter from "@modules/animation/animated-counter"
-import {
-  Car,
-  CheckCircle,
-  Factory,
-  ShieldCheck,
-  Ship,
-  TrainFront,
-  Unplug,
-} from "lucide-react"
+import HorizontalScrollCarousel from "@modules/animation/horizontal-scroll-carousel"
+import { CheckCircle, ShieldCheck, Unplug } from "lucide-react"
 import Image from "next/image"
 import React from "react"
 
@@ -126,11 +119,11 @@ export default function AboutUs({ className }: AboutUsProps) {
       </div>
 
       <div className="flex justify-center flex-col items-center my-20">
-        <h1 className="text-center text-3xl font-light my-12">
+        <h1 className="text-center text-4xl my-12 uppercase">
           High quality components
         </h1>
 
-        <div className="grid grid-cols-2 relative">
+        <div className="grid grid-cols-2 relative gap-x-8">
           <div className="mt-10 col-span-1 w-fit grid grid-cols-1 gap-4">
             {elements.map((element) => (
               <div className="flex flex-col gap-4 h-[75vh]" key={element.name}>
@@ -144,17 +137,17 @@ export default function AboutUs({ className }: AboutUsProps) {
                 <h3 className="uppercase font-mono font-bold text-4xl">
                   {element.name}
                 </h3>
-                <p>{element.description}</p>
+                <p className="text-2xl font-light">{element.description}</p>
               </div>
             ))}
           </div>
-          <p className="text-2xl h-fit sticky top-56 p-8 text-justify">
+          <p className="text-2xl h-fit sticky top-56 p-8 text-right">
             Our battery modules use{" "}
-            <span className="border-b-2 border-green-400 font-mono tracking-tight">
+            <span className="border-b-2 border-green-400 font-mono text-xl tracking-tight">
               lithium-nickel-manganese-cobalt
             </span>{" "}
             <code className="font-bold">NMC</code> and{" "}
-            <span className="font-mono border-b-2 border-green-400 tracking-tight">
+            <span className="font-mono border-b-2 border-green-400 tracking-tight text-xl">
               lithium-iron-phosphate
             </span>{" "}
             <code className="font-bold">
@@ -166,28 +159,17 @@ export default function AboutUs({ className }: AboutUsProps) {
       </div>
 
       <div className="flex justify-center flex-col items-center my-20">
-        <div className="my-8 grid gap-8">
-          <h1 className="text-center text-3xl font-light">Broad appliances</h1>
-          <p>
+        <div className="my-24 grid gap-8 overflow-hidden">
+          <h1 className="text-center text-4xl uppercase">Broad appliances</h1>
+          <p className="text-xl font-light">
             Thanks to our modular concept and simple assembly, the batteries are
             ideal for a wide range of applications, cover any energy
             requirement, and adapt perfectly to the packaging and technical
             requirements of any projects.
           </p>
-
-          <div className="flex items-center justify-center gap-x-4">
-            <Car className="w-8 h-8" />
-            <p className="uppercase font-mono">Vehicles</p>
-            <TrainFront className="w-8 h-8" />
-            <p className="uppercase font-mono">Rail vehicles</p>
-            <Ship className="w-8 h-8" />
-            <p className="uppercase font-mono">Ships</p>
-            <Factory className="w-8 h-8" />
-            <p className="uppercase font-mono">
-              Industrial machines and hybrid machines
-            </p>
-          </div>
         </div>
+
+        <HorizontalScrollCarousel />
       </div>
 
       <div className="flex gap-x-16 my-20">
@@ -205,7 +187,7 @@ export default function AboutUs({ className }: AboutUsProps) {
               className="col-span-1 text-center md:flex md:items-start md:text-left lg:block lg:text-center"
             >
               <div className="flex justify-center md:flex-shrink-0">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-400 ">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full ring-gray-900 hover:ring-gray-900/50 text-gray-600 ring-1">
                   {<value.Icon className="h-5 w-5" />}
                 </div>
               </div>
