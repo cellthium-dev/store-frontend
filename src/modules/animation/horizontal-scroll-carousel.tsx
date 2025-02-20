@@ -34,10 +34,10 @@ export default function HorizontalScrollCarousel() {
             {appliances.map((appliance, index) => (
               <div
                 key={index}
-                className="h-96 w-96 text-center flex flex-col items-center justify-center p-12 border-2 rounded-xl  border-green-400"
+                className="text-center flex flex-col items-center justify-center p-12 gap-8"
               >
-                <appliance.icon className="w-24 h-24" />
-                <p className="uppercase font-mono text-5xl p-8">
+                <appliance.icon className="w-20 h-20" />
+                <p className="flex items-center justify-center px-4 w-96 uppercase font-mono text-5xl h-32 bg-green-400">
                   {appliance.name}
                 </p>
               </div>
