@@ -1,9 +1,6 @@
 "use client"
 
-import { cn } from "@lib/utils"
-import Link from "next/link"
-import React from "react"
-import { Icons } from "../icons"
+import { Icons } from "@/_components/icons"
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -12,7 +9,10 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
-} from "../ui/navigation-menu"
+} from "@/_components/ui/navigation-menu"
+import { cn } from "@lib/utils"
+import Link from "next/link"
+import React from "react"
 
 const products: { title: string; href: string; description: string }[] = [
   {

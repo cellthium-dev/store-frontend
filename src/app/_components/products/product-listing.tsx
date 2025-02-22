@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 import { cn, formatPrice } from "@lib/utils"
 import Link from "next/link"
 import { type Product } from "payload-types"
-import { PRODUCT_CATEGORIES } from "../navigations/shared"
+import { PRODUCT_CATEGORIES } from "../../../modules/layout/templates/nav/shared"
 import { Skeleton } from "../ui/skeleton"
 import ImageSlider from "./image-slider"
 

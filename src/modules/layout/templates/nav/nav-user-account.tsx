@@ -1,24 +1,23 @@
 "use client"
 
-import { useRouter } from "next/navigation"
-import { Button } from "../ui/button"
+import { Button } from "@/_components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu"
+} from "@/_components/ui/dropdown-menu"
+import { StoreCustomer } from "@medusajs/types"
+import { useRouter } from "next/navigation"
 
-export default function NavUserAccount({ user }: { user: User }) {
-  const { signOut } = useAuth()
-
+export default function NavUserAccount({ user }: { user: StoreCustomer }) {
   const router = useRouter()
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild className="overflow-visible">
         <Button variant="ghost" size="sm" className="relative">
-          My account
+          Account
         </Button>
       </DropdownMenuTrigger>
 
@@ -34,7 +33,10 @@ export default function NavUserAccount({ user }: { user: User }) {
           Order history
         </DropdownMenuItem>
 
-        <DropdownMenuItem onClick={signOut} className="cursor-pointer">
+        <DropdownMenuItem
+          onClick={() => console.log("log out")}
+          className="cursor-pointer"
+        >
           Log out
         </DropdownMenuItem>
       </DropdownMenuContent>
