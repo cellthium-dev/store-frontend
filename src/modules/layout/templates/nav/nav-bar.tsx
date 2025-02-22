@@ -30,17 +30,15 @@ export default async function Navbar() {
               {/** account navigation. */}
               <div className="ml-auto flex items-center">
                 <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
-                  {customer ? null : (
-                    <LocalizedClientLink
-                      href="/account"
-                      className={buttonVariants({
-                        variant: "ghost",
-                        className: "uppercase",
-                      })}
-                    >
-                      Account
-                    </LocalizedClientLink>
-                  )}
+                  <LocalizedClientLink
+                    href="/account"
+                    className={buttonVariants({
+                      variant: "ghost",
+                      className: "uppercase",
+                    })}
+                  >
+                    Account
+                  </LocalizedClientLink>
 
                   <div className="flow-root">
                     <CartButton />
