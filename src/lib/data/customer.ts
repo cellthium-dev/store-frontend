@@ -250,3 +250,22 @@ export const updateCustomerAddress = async (
       return { success: false, error: err.toString() }
     })
 }
+
+export const resetPassword = async (
+  email: string
+): Promise<TActionResponse> => {
+  const response: TActionResponse = { success: false }
+
+  try {
+    sdk.auth.resetPassword("customer", "emailpass", {
+      identifier: email,
+    })
+
+    response.success = true
+    return response
+  } catch (error: any) {
+    response.success = false
+    response.message = error.toString()
+    return response
+  }
+}
