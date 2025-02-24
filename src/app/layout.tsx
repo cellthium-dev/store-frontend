@@ -3,7 +3,6 @@ import { GeistMono } from "geist/font/mono"
 import { GeistSans } from "geist/font/sans"
 import { Metadata } from "next"
 import "styles/globals.css"
-import { Toaster } from "./_components/ui/sonner"
 
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseURL()),
@@ -14,7 +13,6 @@ export default function RootLayout(props: { children: React.ReactNode }) {
     <html lang="en" data-mode="light">
       <body className={`${GeistMono.variable} ${GeistSans.variable} font-sans`}>
         <main className="relative">{props.children}</main>
-        <Toaster position="top-center" richColors />
       </body>
     </html>
   )

@@ -2,9 +2,9 @@
 
 import { sdk } from "@lib/config"
 import medusaError from "@lib/util/medusa-error"
+import { TActionResponse } from "@lib/validators/action"
 import { HttpTypes } from "@medusajs/types"
 import { revalidateTag } from "next/cache"
-import { redirect } from "next/navigation"
 import {
   getAuthHeaders,
   getCacheOptions,
@@ -99,10 +99,14 @@ export async function signup(_currentState: unknown, formData: FormData) {
   }
 }
 
-export async function login(_currentState: unknown, formData: FormData) {
+export async function login(
+  _currentState: unknown,
+  formData: FormData
+): Promise<TActionResponse | undefined> {
   const email = formData.get("email") as string
   const password = formData.get("password") as string
 
+  const result: TActionResponse = { success: false }
   try {
     await sdk.auth
       .login("customer", "emailpass", { email, password })
@@ -112,33 +116,34 @@ export async function login(_currentState: unknown, formData: FormData) {
         revalidateTag(customerCacheTag)
       })
   } catch (error: any) {
-    return error.toString()
+    result.success = false
+    result.message = error.toString()
+    return result
   }
 
   try {
     await transferCart()
   } catch (error: any) {
-    return error.toString()
+    result.success = false
+    result.message = error.toString()
+    return result
   }
 }
 
-export async function signout(countryCode: string) {
+export async function signout(countryCode: string): Promise<TActionResponse> {
   await sdk.auth.logout()
-  removeAuthToken()
+  await removeAuthToken()
   revalidateTag("auth")
   revalidateTag("customer")
-  redirect(`/${countryCode}/account`)
+
+  return { success: true }
 }
 
 export async function transferCart() {
   const cartId = await getCartId()
-
-  if (!cartId) {
-    return
-  }
+  if (!cartId) return
 
   const headers = await getAuthHeaders()
-
   await sdk.store.cart.transferCart(cartId, {}, headers)
 
   revalidateTag("cart")

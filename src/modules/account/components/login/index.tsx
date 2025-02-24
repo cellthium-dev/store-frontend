@@ -1,16 +1,23 @@
 import { login } from "@lib/data/customer"
+import { toast } from "@medusajs/ui"
 import { LOGIN_VIEW } from "@modules/account/templates/login-template"
 import ErrorMessage from "@modules/checkout/components/error-message"
 import { SubmitButton } from "@modules/checkout/components/submit-button"
 import Input from "@modules/common/components/input"
-import { useActionState } from "react"
+import React from "react"
 
 type Props = {
   setCurrentView: (view: LOGIN_VIEW) => void
 }
 
 const Login = ({ setCurrentView }: Props) => {
-  const [message, formAction] = useActionState(login, null)
+  const [response, formAction] = React.useActionState(login, null)
+
+  React.useEffect(() => {
+    if (response?.success === false) {
+      toast.error("Authentication failed", { description: response.message })
+    }
+  }, [response?.success])
 
   return (
     <div
@@ -41,7 +48,10 @@ const Login = ({ setCurrentView }: Props) => {
             data-testid="password-input"
           />
         </div>
-        <ErrorMessage error={message} data-testid="login-error-message" />
+        <ErrorMessage
+          error={response?.message}
+          data-testid="login-error-message"
+        />
         <SubmitButton data-testid="sign-in-button" className="w-full mt-6">
           Sign in
         </SubmitButton>
