@@ -1,10 +1,11 @@
 "use client"
 
 import { Button, buttonVariants } from "@/_components/ui/button"
-import { Input } from "@/_components/ui/input"
+
 import { resetPassword, resetPasswordToken } from "@lib/data/customer"
 import { toast } from "@medusajs/ui"
 import Banner from "@modules/common/components/banner"
+import Input from "@modules/common/components/input"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { Loader2 } from "lucide-react"
 import { useSearchParams } from "next/navigation"
@@ -89,9 +90,9 @@ export default function ResetPassword() {
   }
 
   return (
-    <div className="grid items-center justify-center gap-8 my-40 max-w-sm mx-auto">
+    <div className="grid items-center justify-center gap-8 py-40 max-w-sm mx-auto">
       <div className="grid gap-4 text-center">
-        <h1 className="text-lg font-semibold">Reset password</h1>
+        <h1 className="text-lg font-semibold uppercase">Reset password</h1>
         <p className="text-sm">
           Enter your email below, and we will send you instructions on how to
           reset your password.
@@ -102,11 +103,17 @@ export default function ResetPassword() {
         {token && email ? (
           <form onSubmit={handleResetPassword} className="grid gap-8 w-full">
             <div className="grid gap-4">
-              <Input placeholder="Password" type="password" name="password" />
               <Input
-                placeholder="Confirm password"
+                label="Password"
+                type="password"
+                name="password"
+                required
+              />
+              <Input
+                label="Confirm password"
                 type="password"
                 name="password-confirm"
+                required
               />
               {isResetSuccess ? (
                 <Banner
@@ -141,7 +148,13 @@ export default function ResetPassword() {
             action={(payload) => void executeFormAction(payload)}
             className="grid gap-8 w-full"
           >
-            <Input placeholder="Email" type="email" name="email" />
+            <Input
+              label="Email"
+              type="email"
+              name="email"
+              autoComplete="email"
+              required
+            />
             {isSuccess ? (
               <Banner
                 type="success"
