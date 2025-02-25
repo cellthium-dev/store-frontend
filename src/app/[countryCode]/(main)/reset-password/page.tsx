@@ -21,7 +21,6 @@ export default function ResetPassword() {
     setLoading(true)
 
     const response = await resetPassword(email)
-    console.log(response)
     if (response.success)
       toast.success("Password reset email sent. Please check your inbox.")
     else

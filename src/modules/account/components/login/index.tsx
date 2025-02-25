@@ -1,14 +1,17 @@
 import { Button } from "@/_components/ui/button"
 import { Separator } from "@/_components/ui/separator"
-import { login } from "@lib/data/customer"
+import { login, loginWithGoogle } from "@lib/data/customer"
 import { toast } from "@medusajs/ui"
 import { LOGIN_VIEW } from "@modules/account/templates/login-template"
 import ErrorMessage from "@modules/checkout/components/error-message"
 import { SubmitButton } from "@modules/checkout/components/submit-button"
 import Input from "@modules/common/components/input"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import { Loader2 } from "lucide-react"
+import { useRouter } from "next/navigation"
 import React from "react"
 import { FaGoogle } from "react-icons/fa"
+import { useServerAction } from "zsa-react"
 
 type Props = {
   setCurrentView: (view: LOGIN_VIEW) => void
@@ -22,6 +25,16 @@ const Login = ({ setCurrentView }: Props) => {
       toast.error("Authentication failed", { description: response.message })
     }
   }, [response?.success])
+
+  const router = useRouter()
+  const { isPending, execute } = useServerAction(loginWithGoogle, {
+    onError: ({ err }) => {
+      toast.error(`Authentication failed`, { description: err.message })
+    },
+    onSuccess: ({ data }) => {
+      if (data.location) router.push(data.location)
+    },
+  })
 
   return (
     <div
@@ -69,9 +82,22 @@ const Login = ({ setCurrentView }: Props) => {
           <Separator orientation="horizontal" className="flex-1" />
         </div>
 
-        <Button variant={"outline"}>
-          <FaGoogle className="mr-2" />
-          Continue with Google
+        <Button
+          variant={"outline"}
+          onClick={async () => await execute()}
+          disabled={isPending}
+        >
+          {isPending ? (
+            <div className="flex items-center gap-2">
+              <Loader2 size={16} className="animate-spin" />
+              <p>Logging in ...</p>
+            </div>
+          ) : (
+            <>
+              <FaGoogle className="mr-2" />
+              Continue with Google
+            </>
+          )}
         </Button>
       </div>
 

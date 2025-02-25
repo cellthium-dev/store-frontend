@@ -1,15 +1,12 @@
-import "server-only"
 import { cookies as nextCookies } from "next/headers"
+import "server-only"
 
 export const getAuthHeaders = async (): Promise<
   { authorization: string } | {}
 > => {
   const cookies = await nextCookies()
   const token = cookies.get("_medusa_jwt")?.value
-
-  if (!token) {
-    return {}
-  }
+  if (!token) return {}
 
   return { authorization: `Bearer ${token}` }
 }
@@ -18,10 +15,7 @@ export const getCacheTag = async (tag: string): Promise<string> => {
   try {
     const cookies = await nextCookies()
     const cacheId = cookies.get("_medusa_cache_id")?.value
-
-    if (!cacheId) {
-      return ""
-    }
+    if (!cacheId) return ""
 
     return `${tag}-${cacheId}`
   } catch (error) {
@@ -32,15 +26,10 @@ export const getCacheTag = async (tag: string): Promise<string> => {
 export const getCacheOptions = async (
   tag: string
 ): Promise<{ tags: string[] } | {}> => {
-  if (typeof window !== "undefined") {
-    return {}
-  }
+  if (typeof window !== "undefined") return {}
 
   const cacheTag = await getCacheTag(tag)
-
-  if (!cacheTag) {
-    return {}
-  }
+  if (!cacheTag) return {}
 
   return { tags: [`${cacheTag}`] }
 }
