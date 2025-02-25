@@ -3,12 +3,12 @@ import { Separator } from "@/_components/ui/separator"
 import { login, loginWithGoogle } from "@lib/data/customer"
 import { toast } from "@medusajs/ui"
 import { LOGIN_VIEW } from "@modules/account/templates/login-template"
-import ErrorMessage from "@modules/checkout/components/error-message"
 import { SubmitButton } from "@modules/checkout/components/submit-button"
+import Banner from "@modules/common/components/banner"
 import Input from "@modules/common/components/input"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { Loader2 } from "lucide-react"
-import { useRouter } from "next/navigation"
+import { redirect, useRouter } from "next/navigation"
 import React from "react"
 import { FaGoogle } from "react-icons/fa"
 import { useServerAction } from "zsa-react"
@@ -18,13 +18,19 @@ type Props = {
 }
 
 const Login = ({ setCurrentView }: Props) => {
-  const [response, formAction] = React.useActionState(login, null)
-
-  React.useEffect(() => {
-    if (response?.success === false) {
-      toast.error("Authentication failed", { description: response.message })
-    }
-  }, [response?.success])
+  const {
+    error,
+    isError,
+    execute: onLogin,
+  } = useServerAction(login, {
+    onError: ({ err }) => {
+      toast.error("Login failed", { description: err.message })
+    },
+    onSuccess: () => {
+      toast.success("Login successful")
+      redirect("")
+    },
+  })
 
   const router = useRouter()
   const { isPending, execute } = useServerAction(loginWithGoogle, {
@@ -47,7 +53,15 @@ const Login = ({ setCurrentView }: Props) => {
       </p>
 
       <div className="w-full grid gap-y-2">
-        <form className="w-full " action={formAction}>
+        <form
+          className="w-full grid gap-y-4"
+          onSubmit={async (event: React.FormEvent<HTMLFormElement>) => {
+            event.preventDefault()
+
+            const formData = new FormData(event.currentTarget)
+            await onLogin(formData)
+          }}
+        >
           <div className="flex flex-col w-full gap-y-2">
             <Input
               label="Email"
@@ -67,10 +81,15 @@ const Login = ({ setCurrentView }: Props) => {
               data-testid="password-input"
             />
           </div>
-          <ErrorMessage
-            error={response?.message}
-            data-testid="login-error-message"
-          />
+
+          {isError ? (
+            <Banner
+              type="error"
+              description={error.message}
+              title="Login failed."
+            />
+          ) : null}
+
           <SubmitButton data-testid="sign-in-button" className="w-full mt-6">
             Sign in
           </SubmitButton>

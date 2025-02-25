@@ -4,6 +4,7 @@ import { sdk } from "@lib/config"
 import medusaError from "@lib/util/medusa-error"
 import { TActionResponse } from "@lib/validators/action"
 import { HttpTypes } from "@medusajs/types"
+import { HttpStatusCode } from "axios"
 import { revalidateTag } from "next/cache"
 import { decodeToken } from "react-jwt"
 import { z } from "zod"
@@ -16,6 +17,26 @@ import {
   removeAuthToken,
   setAuthToken,
 } from "./cookies"
+
+type MedusaError = {
+  readonly name: string
+  readonly message: string
+  readonly statusText: string
+  readonly status: HttpStatusCode
+  readonly stack: string
+}
+
+function isMedusaError(value: any): value is MedusaError {
+  return (
+    value != null && // Not null or undefined
+    typeof value === "object" && // Is an object
+    typeof value.name === "string" && // Has string name
+    typeof value.message === "string" && // Has string message
+    typeof value.statusText === "string" && // Has string statusText
+    typeof value.status === "number" && // Has numeric status (adjust if HttpStatusCode is more specific)
+    typeof value.stack === "string" // Has string stack
+  )
+}
 
 export const retrieveCustomer =
   async (): Promise<HttpTypes.StoreCustomer | null> => {
@@ -57,81 +78,112 @@ export const updateCustomer = async (body: HttpTypes.StoreUpdateCustomer) => {
   return updateRes
 }
 
-export async function signup(_currentState: unknown, formData: FormData) {
-  const password = formData.get("password") as string
-  const customerForm = {
-    email: formData.get("email") as string,
-    first_name: formData.get("first_name") as string,
-    last_name: formData.get("last_name") as string,
-    phone: formData.get("phone") as string,
-  }
-
-  try {
-    const token = await sdk.auth.register("customer", "emailpass", {
-      email: customerForm.email,
-      password: password,
+export const signup = createServerAction()
+  .input(
+    z.object({
+      email: z.string(),
+      first_name: z.string(),
+      last_name: z.string(),
+      phone: z.string().optional(),
+      password: z.string(),
     })
-
-    await setAuthToken(token as string)
-
-    const headers = {
-      ...(await getAuthHeaders()),
+  )
+  .handler(async ({ input }) => {
+    const password = input.password
+    const customerForm = {
+      email: input.email,
+      first_name: input.first_name,
+      last_name: input.last_name,
+      phone: input.phone,
     }
 
-    const { customer: createdCustomer } = await sdk.store.customer.create(
-      customerForm,
-      {},
-      headers
-    )
-
-    const loginToken = await sdk.auth.login("customer", "emailpass", {
-      email: customerForm.email,
-      password,
-    })
-
-    await setAuthToken(loginToken as string)
-
-    const customerCacheTag = await getCacheTag("customers")
-    revalidateTag(customerCacheTag)
-
-    await transferCart()
-
-    return createdCustomer
-  } catch (error: any) {
-    return error.toString()
-  }
-}
-
-export async function login(
-  _currentState: unknown,
-  formData: FormData
-): Promise<TActionResponse | undefined> {
-  const email = formData.get("email") as string
-  const password = formData.get("password") as string
-
-  const result: TActionResponse = { success: false }
-  try {
-    await sdk.auth
-      .login("customer", "emailpass", { email, password })
-      .then(async (token) => {
-        await setAuthToken(token as string)
-        const customerCacheTag = await getCacheTag("customers")
-        revalidateTag(customerCacheTag)
+    /** handle token retrieval if email already registered as user
+     * set authentication token after registration or login for further processing.
+     */
+    let token
+    try {
+      token = await sdk.auth.register("customer", "emailpass", {
+        email: customerForm.email,
+        password: password,
       })
-  } catch (error: any) {
-    result.success = false
-    result.message = error.toString()
-    return result
-  }
+    } catch (err: any) {
+      if (
+        err.status === HttpStatusCode.Unauthorized &&
+        err.message === "Identity with email already exists"
+      ) {
+        token = await sdk.auth.login("customer", "emailpass", {
+          email: customerForm.email,
+          password: password,
+        })
+      }
+    }
+    await setAuthToken(token as string)
 
-  try {
-    await transferCart()
-  } catch (error: any) {
-    result.success = false
-    result.message = error.toString()
-    return result
-  }
-}
+    try {
+      const headers = {
+        ...(await getAuthHeaders()),
+      }
+
+      const { customer: createdCustomer } = await sdk.store.customer.create(
+        customerForm,
+        {},
+        headers
+      )
+
+      /** update authentication token. */
+      const loginToken = await sdk.auth.login("customer", "emailpass", {
+        email: customerForm.email,
+        password,
+      })
+      await setAuthToken(loginToken as string)
+
+      const customerCacheTag = await getCacheTag("customers")
+      revalidateTag(customerCacheTag)
+
+      await transferCart()
+
+      return createdCustomer
+    } catch (error: any) {
+      if (isMedusaError(error)) {
+        if (error.status === HttpStatusCode.UnprocessableEntity) {
+          throw new ZSAError(
+            "UNPROCESSABLE_CONTENT",
+            `${error.message}. Please login instead.`
+          )
+        }
+      } else throw new ZSAError("ERROR", error.toString())
+    }
+  })
+
+export const login = createServerAction()
+  .input(
+    z.object({
+      email: z.string(),
+      password: z.string(),
+    }),
+    {
+      type: "formData",
+    }
+  )
+  .handler(async ({ input }) => {
+    const { email, password } = input
+
+    try {
+      const token = await sdk.auth.login("customer", "emailpass", {
+        email,
+        password,
+      })
+
+      await setAuthToken(token as string)
+
+      const customerCacheTag = await getCacheTag("customers")
+      revalidateTag(customerCacheTag)
+
+      await transferCart()
+    } catch (error: any) {
+      throw new ZSAError("ERROR", error.toString())
+    }
+  })
 
 export async function signout(countryCode: string): Promise<TActionResponse> {
   await sdk.auth.logout()
