@@ -254,24 +254,44 @@ export const updateCustomerAddress = async (
     })
 }
 
-export const resetPassword = async (
-  email: string
-): Promise<TActionResponse> => {
-  const response: TActionResponse = { success: false }
+export const resetPasswordToken = createServerAction()
+  .input(z.object({ email: z.string().min(2) }), { type: "formData" })
+  .handler(async ({ input }): Promise<void> => {
+    try {
+      await sdk.auth.resetPassword("customer", "emailpass", {
+        identifier: input.email,
+      })
+    } catch (error: any) {
+      throw new ZSAError("ERROR", error.toString())
+    }
+  })
 
-  try {
-    sdk.auth.resetPassword("customer", "emailpass", {
-      identifier: email,
+export const resetPassword = createServerAction()
+  .input(
+    z.object({
+      password: z.string().min(6),
+      "password-confirm": z.string().min(6),
+      token: z.string(),
     })
+  )
+  .handler(async ({ input }) => {
+    try {
+      if (input.password !== input["password-confirm"]) {
+        throw new ZSAError("ERROR", "Passwords do not match")
+      }
 
-    response.success = true
-    return response
-  } catch (error: any) {
-    response.success = false
-    response.message = error.toString()
-    return response
-  }
-}
+      await sdk.auth.updateProvider(
+        "customer",
+        "emailpass",
+        {
+          password: input.password,
+        },
+        input.token
+      )
+    } catch (error: any) {
+      throw new ZSAError("ERROR", error.toString())
+    }
+  })
 
 export const loginWithGoogle = createServerAction().handler(async () => {
   try {

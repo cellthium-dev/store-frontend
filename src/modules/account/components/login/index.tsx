@@ -113,13 +113,13 @@ const Login = ({ setCurrentView }: Props) => {
         .
       </span>
       <span className="text-center text-ui-fg-base text-small-regular mt-4">
-        Forgot your password?{" "}
+        Forgot password?{" "}
         <LocalizedClientLink
-          href="/account/reset-password"
+          href="/reset-password"
           className="underline"
           data-testid="register-button"
         >
-          Reset password
+          Reset
         </LocalizedClientLink>
       </span>
     </div>

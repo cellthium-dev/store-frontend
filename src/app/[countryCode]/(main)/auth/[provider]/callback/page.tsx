@@ -9,7 +9,7 @@ import { useSearchParams } from "next/navigation"
 import React from "react"
 import { useServerAction } from "zsa-react"
 
-interface ICallbackParams {
+type TGoogleOAuthCallbackParams = {
   readonly code?: string
   readonly state?: string
 }
@@ -26,7 +26,9 @@ export default function GoogleCallback() {
   })
   const queryParams = useSearchParams()
   const validateCallback = async () => {
-    const { code, state } = Object.fromEntries(queryParams) as ICallbackParams
+    const { code, state } = Object.fromEntries(
+      queryParams
+    ) as TGoogleOAuthCallbackParams
     if (!code || !state) {
       toast.error("Invalid google callback.", {
         description:

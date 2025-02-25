@@ -1,64 +1,144 @@
 "use client"
 
-import { Button } from "@/_components/ui/button"
+import { Button, buttonVariants } from "@/_components/ui/button"
 import { Input } from "@/_components/ui/input"
-import { Label } from "@/_components/ui/label"
-import { resetPassword } from "@lib/data/customer"
+import { resetPassword, resetPasswordToken } from "@lib/data/customer"
 import { toast } from "@medusajs/ui"
+import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { Loader2 } from "lucide-react"
-import React from "react"
+import { redirect, useSearchParams } from "next/navigation"
+import { useServerAction } from "zsa-react"
+
+type TResetPasswordParams = {
+  readonly token: string
+  readonly email: string
+}
 
 export default function ResetPassword() {
-  const [loading, setLoading] = React.useState(false)
-  const [email, setEmail] = React.useState("")
+  /** action to request reset password token. */
+  const { isPending, executeFormAction } = useServerAction(resetPasswordToken, {
+    onSuccess: () => {
+      toast.success("Reset password mail sent.", {
+        description: "Password reset email sent. Please check your inbox.",
+      })
+    },
+    onError: ({ err }) => {
+      toast.error("Reset password failed.", {
+        description:
+          (err?.code === "INPUT_PARSE_ERROR" && "Email field required.") ||
+          "An error occurred while sending the reset password email.",
+      })
+    },
+  })
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    if (!email) {
-      toast.error("Email is required")
+  const params = useSearchParams()
+  const { token, email } = Object.fromEntries(params) as TResetPasswordParams
+
+  /** action to perform password reset. */
+  const { isPending: isResetPending, execute } = useServerAction(
+    resetPassword,
+    {
+      onSuccess: () => {
+        toast.success("Password reset successful.", {
+          description: "Your password has been reset.",
+        })
+
+        redirect("/account")
+      },
+      onError: ({ err }) => {
+        toast.error("Password reset failed.", {
+          description:
+            (err?.code === "INPUT_PARSE_ERROR" &&
+              "Password fields required.") ||
+            err.message ||
+            "An error occurred while resetting your password.",
+        })
+      },
+    }
+  )
+
+  const handleResetPassword = async (
+    event: React.FormEvent<HTMLFormElement>
+  ) => {
+    event.preventDefault()
+    const formData = new FormData(event.currentTarget)
+
+    const password = formData.get("password")
+    const passwordConfirm = formData.get("password-confirm")
+
+    if (!password || !passwordConfirm) {
+      toast.error("Password fields required.", {
+        description: "Please fill in both password fields.",
+      })
       return
     }
-    setLoading(true)
 
-    const response = await resetPassword(email)
-    if (response.success)
-      toast.success("Password reset email sent. Please check your inbox.")
-    else
-      toast.error(
-        "An error occured while sending the password reset email. Please try again later."
-      )
-
-    setLoading(false)
+    await execute({
+      password: password as string,
+      "password-confirm": passwordConfirm as string,
+      token: token,
+    })
   }
 
   return (
-    <div className="grid items-center justify-center gap-8 m-40">
-      <div className="grid gap-4">
-        <h1 className="text-3xl font-light">Reset account password</h1>
-        <p>Please fill out the form below to request a password reset.</p>
+    <div className="grid items-center justify-center gap-8 my-40 max-w-sm mx-auto">
+      <div className="grid gap-4 text-center">
+        <h1 className="text-lg font-semibold">Reset password</h1>
+        <p className="text-sm">
+          Enter your email below, and we will send you instructions on how to
+          reset your password.
+        </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="grid gap-8">
-        <div className="">
-          <Label>Email</Label>
-          <Input
-            placeholder="Email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-        <Button type="submit" disabled={loading}>
-          {loading ? (
-            <div className="flex gap-2 items-center">
-              <Loader2 className="animate-spin w-4 h-4" />
-              <p>Loading ...</p>
+      <div className="grid gap-4">
+        {token && email ? (
+          <form onSubmit={handleResetPassword} className="grid gap-8 w-full">
+            <div className="grid gap-4">
+              <Input placeholder="Password" type="password" name="password" />
+              <Input
+                placeholder="Confirm password"
+                type="password"
+                name="password-confirm"
+              />
             </div>
-          ) : (
-            <p>Request Password Reset</p>
-          )}
-        </Button>
-      </form>
+            <Button type="submit" disabled={isResetPending}>
+              {isResetPending ? (
+                <div className="flex gap-2 items-center">
+                  <Loader2 className="animate-spin w-4 h-4" />
+                  <p>Loading ...</p>
+                </div>
+              ) : (
+                <p>Reset password</p>
+              )}
+            </Button>
+          </form>
+        ) : (
+          <form
+            action={(payload) => void executeFormAction(payload)}
+            className="grid gap-8 w-full"
+          >
+            <Input placeholder="Email" type="email" name="email" />
+
+            <Button type="submit" disabled={isPending}>
+              {isPending ? (
+                <div className="flex gap-2 items-center">
+                  <Loader2 className="animate-spin w-4 h-4" />
+                  <p>Loading ...</p>
+                </div>
+              ) : (
+                <p>Request Password Reset</p>
+              )}
+            </Button>
+          </form>
+        )}
+
+        <LocalizedClientLink
+          href="/account"
+          className={buttonVariants({ variant: "link" })}
+        >
+          Back to login
+        </LocalizedClientLink>
+      </div>
     </div>
   )
 }
