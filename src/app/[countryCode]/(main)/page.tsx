@@ -8,7 +8,7 @@ import { ReactLenis } from "lenis/dist/lenis-react"
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Medusa Next.js Starter Template",
+  title: "Cellthium",
   description:
     "A performant frontend ecommerce starter template with Next.js 14 and Medusa.",
 }

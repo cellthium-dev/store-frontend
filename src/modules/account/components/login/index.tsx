@@ -7,7 +7,7 @@ import { SubmitButton } from "@modules/checkout/components/submit-button"
 import Banner from "@modules/common/components/banner"
 import Input from "@modules/common/components/input"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import { Loader2 } from "lucide-react"
+import { Loader } from "lucide-react"
 import { redirect, useRouter } from "next/navigation"
 import React from "react"
 import { FaGoogle } from "react-icons/fa"
@@ -108,7 +108,7 @@ const Login = ({ setCurrentView }: Props) => {
         >
           {isPending ? (
             <div className="flex items-center gap-2">
-              <Loader2 size={16} className="animate-spin" />
+              <Loader size={16} className="animate-spin" />
               <p>Logging in ...</p>
             </div>
           ) : (

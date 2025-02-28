@@ -3,7 +3,7 @@
 import { cn } from "@lib/utils"
 import { type TMessageValidator } from "@lib/validators/message"
 import { useMutation } from "@tanstack/react-query"
-import { CornerDownLeft, Loader2 } from "lucide-react"
+import { CornerDownLeft, Loader } from "lucide-react"
 import { nanoid } from "nanoid"
 import {
   useContext,
@@ -118,7 +118,7 @@ export default function ChatInput({ className, ...props }: ChatInputProps) {
         <div className="absolute inset-y-0 right-0 flex py-1.5 pr-1.5">
           <kbd className="inline-flex items-center rounded bg-white border-gray-200 px-1 font-sans text-xs text-gray-400 focus:ring-0">
             {isPending ? (
-              <Loader2 className="w-3 h-3 animate-spin" />
+              <Loader className="w-3 h-3 animate-spin" />
             ) : (
               <CornerDownLeft className="w-3 h-3" />
             )}

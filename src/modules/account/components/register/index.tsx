@@ -9,7 +9,7 @@ import { SubmitButton } from "@modules/checkout/components/submit-button"
 import Banner from "@modules/common/components/banner"
 import Input from "@modules/common/components/input"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import { Loader2 } from "lucide-react"
+import { Loader } from "lucide-react"
 import React from "react"
 import { useServerAction } from "zsa-react"
 
@@ -122,7 +122,7 @@ const Register = ({ setCurrentView }: Props) => {
         {isPending ? (
           <Button disabled={isPending} className="w-full mt-6">
             <div className="flex gap-x-1 items-center">
-              <Loader2 size={16} className="animate-spin" />
+              <Loader size={16} className="animate-spin" />
               <p>Loading</p>
             </div>
           </Button>

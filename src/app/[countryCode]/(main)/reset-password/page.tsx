@@ -7,7 +7,7 @@ import { toast } from "@medusajs/ui"
 import Banner from "@modules/common/components/banner"
 import Input from "@modules/common/components/input"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import { Loader2 } from "lucide-react"
+import { Loader } from "lucide-react"
 import { useSearchParams } from "next/navigation"
 import { useServerAction } from "zsa-react"
 import useRedirectWithCounter from "./useCounter"
@@ -135,7 +135,7 @@ export default function ResetPassword() {
             <Button type="submit" disabled={isResetPending}>
               {isResetPending ? (
                 <div className="flex gap-2 items-center">
-                  <Loader2 className="animate-spin w-4 h-4" />
+                  <Loader className="animate-spin w-4 h-4" />
                   <p>Loading ...</p>
                 </div>
               ) : (
@@ -167,7 +167,7 @@ export default function ResetPassword() {
             <Button type="submit" disabled={isPending}>
               {isPending ? (
                 <div className="flex gap-2 items-center">
-                  <Loader2 className="animate-spin w-4 h-4" />
+                  <Loader className="animate-spin w-4 h-4" />
                   <p>Loading ...</p>
                 </div>
               ) : (

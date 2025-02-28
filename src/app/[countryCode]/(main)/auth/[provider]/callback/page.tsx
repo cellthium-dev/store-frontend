@@ -1,11 +1,9 @@
 "use client"
 
-import { Button } from "@/_components/ui/button"
 import { handleGoogleOAuthCallback } from "@lib/data/customer"
-import { HttpTypes } from "@medusajs/types"
 import { toast } from "@medusajs/ui"
-import { Loader2 } from "lucide-react"
-import { useSearchParams } from "next/navigation"
+import { Loader } from "lucide-react"
+import { redirect, useSearchParams } from "next/navigation"
 import React from "react"
 import { useServerAction } from "zsa-react"
 
@@ -15,14 +13,16 @@ type TGoogleOAuthCallbackParams = {
 }
 
 export default function GoogleCallback() {
-  const [customer, setCustomer] = React.useState<HttpTypes.StoreCustomer>()
-
   /** action to validate callback. */
-  const { isPending, execute } = useServerAction(handleGoogleOAuthCallback, {
+  const { execute, isSuccess } = useServerAction(handleGoogleOAuthCallback, {
     onError: ({ err }) => {
       toast.error(`Authentication failed`, { description: err.message })
+      redirect("/account")
     },
-    onSuccess: ({ data }) => {},
+    onSuccess: () => {
+      toast.success("Authentication successful")
+      redirect("/account")
+    },
   })
   const queryParams = useSearchParams()
   const validateCallback = async () => {
@@ -34,24 +34,23 @@ export default function GoogleCallback() {
         description:
           "An error occured while trying to authenticate with Google. Code or state was invalid.",
       })
-      return
+      return { success: true }
     }
 
     /** handle oauth callback. */
     await execute({ code: code, state: state })
   }
 
+  React.useEffect(() => {
+    validateCallback()
+  }, [isSuccess])
+
   return (
     <div className="min-h-screen flex items-center justify-center">
-      {isPending && (
-        <div className="flex items-center gap-2">
-          <Loader2 className="animate-spin" size={16} />
-          Loading...
-        </div>
-      )}
-      {customer && <span>Created customer {customer.email} with Google.</span>}
-
-      <Button onClick={() => validateCallback()}>Validate</Button>
+      <div className="flex items-center gap-2">
+        <Loader className="animate-spin" size={16} />
+        {"Authenticating"}
+      </div>
     </div>
   )
 }

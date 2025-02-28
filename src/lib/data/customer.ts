@@ -366,6 +366,17 @@ type GoogleOAuthCallbackResponse = {
   readonly iat: number
   readonly exp: number
 }
+
+type GoogleOAuthAccountResponse = {
+  readonly id: string
+  readonly user_metadata: {
+    readonly name: string
+    readonly email: string
+    readonly picture: string
+    readonly family_name: string
+    readonly given_name: string
+  }
+}
 export const handleGoogleOAuthCallback = createServerAction()
   .input(
     z.object({
@@ -385,39 +396,45 @@ export const handleGoogleOAuthCallback = createServerAction()
         state: input.state,
       })
       await setAuthToken(token)
-      console.log("initial token", token)
-
       const decodedToken = decodeToken(token) as GoogleOAuthCallbackResponse
-      console.log("decoded token:\n", decodedToken)
 
       /** validate auth token.
        * create customer if token is empty.
        * refresh token if customer already exists.
        */
-      const headers = {
-        ...(await getAuthHeaders()),
-      }
-      const shouldCreateCustomer = decodedToken.actor_id === ""
-      if (shouldCreateCustomer) {
-        const customer = await sdk.store.customer.create(
-          {
-            email: "info.cellthium@gmail.com",
-          },
-          {},
-          headers
-        )
-        console.log("Created customer", customer)
+      const isAuthenticated = decodedToken.actor_id !== ""
+      if (isAuthenticated) {
+        const customerCacheTag = await getCacheTag("customers")
+        revalidateTag(customerCacheTag)
+
+        return await transferCart()
       }
 
-      const { customer } = await sdk.client.fetch<{
-        customer: HttpTypes.StoreCustomer
-      }>("store/customers/me", {
-        method: "GET",
-        headers: { authorization: `Bearer ${token}` },
-        cache: "force-cache",
-      })
+      /** retrieve user information from provider. */
+      const customer = await sdk.client.fetch<GoogleOAuthAccountResponse>(
+        `/auth/google?auth_identity_id=${decodedToken.auth_identity_id}`,
+        {
+          method: "GET",
+        }
+      )
 
-      console.log(customer)
+      /** create customer. */
+      const headers = await getAuthHeaders()
+      await sdk.store.customer.create(
+        {
+          email: customer.user_metadata.email,
+          first_name: customer.user_metadata.given_name,
+          last_name: customer.user_metadata.family_name,
+        },
+        {},
+        headers
+      )
+
+      /** revalidate cache and transfer cart. */
+      const customerCacheTag = await getCacheTag("customers")
+      revalidateTag(customerCacheTag)
+
+      return await transferCart()
     } catch (error: any) {
       console.log(error)
       throw new ZSAError("ERROR", error.toString())

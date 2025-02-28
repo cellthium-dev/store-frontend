@@ -1,19 +1,19 @@
-"use client";
+"use client"
 
-import { Loader2, XCircle } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { api } from "~/trpc/react";
-import { buttonVariants } from "../ui/button";
+import { Loader, XCircle } from "lucide-react"
+import Image from "next/image"
+import Link from "next/link"
+import { api } from "~/trpc/react"
+import { buttonVariants } from "../ui/button"
 
 interface VerifyEmailProps {
-  readonly token: string;
+  readonly token: string
 }
 
 export default function VerifyEmail({ token }: VerifyEmailProps) {
   const { data, isLoading, isError } = api.auth.verifyEmail.useQuery({
     token,
-  });
+  })
 
   if (isError) {
     return (
@@ -24,7 +24,7 @@ export default function VerifyEmail({ token }: VerifyEmailProps) {
           This token is not valid or might be expired. Please try again.
         </p>
       </div>
-    );
+    )
   }
 
   if (data?.success) {
@@ -42,16 +42,18 @@ export default function VerifyEmail({ token }: VerifyEmailProps) {
           Sign in
         </Link>
       </div>
-    );
+    )
   }
 
   if (isLoading) {
     return (
       <div className="flex flex-col items-center gap-2">
-        <Loader2 className="animate-spin h-8 w-8 text-zinc-300" />
+        <Loader className="animate-spin h-8 w-8 text-zinc-300" />
         <h3 className="font-semibold text-xl">Verifying...</h3>
-        <p className="text-muted-foreground text-sm">This won&apos;t take long.</p>
+        <p className="text-muted-foreground text-sm">
+          This won&apos;t take long.
+        </p>
       </div>
-    );
+    )
   }
 }
