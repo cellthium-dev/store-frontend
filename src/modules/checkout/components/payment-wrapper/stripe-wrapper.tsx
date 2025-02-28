@@ -1,25 +1,25 @@
 "use client"
 
-import { Stripe, StripeElementsOptions } from "@stripe/stripe-js"
-import { Elements } from "@stripe/react-stripe-js"
 import { HttpTypes } from "@medusajs/types"
+import { Elements } from "@stripe/react-stripe-js"
+import { Stripe, StripeElementsOptions } from "@stripe/stripe-js"
 import { createContext } from "react"
 
 type StripeWrapperProps = {
-  paymentSession: HttpTypes.StorePaymentSession
-  stripeKey?: string
-  stripePromise: Promise<Stripe | null> | null
-  children: React.ReactNode
+  readonly paymentSession: HttpTypes.StorePaymentSession
+  readonly stripeKey?: string
+  readonly stripePromise: Promise<Stripe | null> | null
+  readonly children: React.ReactNode
 }
 
 export const StripeContext = createContext(false)
 
-const StripeWrapper: React.FC<StripeWrapperProps> = ({
+export default function StripeWrapper({
   paymentSession,
   stripeKey,
   stripePromise,
   children,
-}) => {
+}: StripeWrapperProps) {
   const options: StripeElementsOptions = {
     clientSecret: paymentSession!.data?.client_secret as string | undefined,
   }
@@ -50,5 +50,3 @@ const StripeWrapper: React.FC<StripeWrapperProps> = ({
     </StripeContext.Provider>
   )
 }
-
-export default StripeWrapper

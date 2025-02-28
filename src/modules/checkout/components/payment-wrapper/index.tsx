@@ -1,10 +1,10 @@
 "use client"
 
+import { isStripe } from "@lib/constants"
+import { HttpTypes } from "@medusajs/types"
 import { loadStripe } from "@stripe/stripe-js"
 import React from "react"
 import StripeWrapper from "./stripe-wrapper"
-import { HttpTypes } from "@medusajs/types"
-import { isStripe } from "@lib/constants"
 
 type PaymentWrapperProps = {
   cart: HttpTypes.StoreCart
@@ -14,7 +14,10 @@ type PaymentWrapperProps = {
 const stripeKey = process.env.NEXT_PUBLIC_STRIPE_KEY
 const stripePromise = stripeKey ? loadStripe(stripeKey) : null
 
-const PaymentWrapper: React.FC<PaymentWrapperProps> = ({ cart, children }) => {
+export default function PaymentWrapper({
+  cart,
+  children,
+}: PaymentWrapperProps) {
   const paymentSession = cart.payment_collection?.payment_sessions?.find(
     (s) => s.status === "pending"
   )
@@ -37,5 +40,3 @@ const PaymentWrapper: React.FC<PaymentWrapperProps> = ({ cart, children }) => {
 
   return <div>{children}</div>
 }
-
-export default PaymentWrapper

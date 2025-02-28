@@ -12,10 +12,7 @@ export const metadata: Metadata = {
 
 export default async function Checkout() {
   const cart = await retrieveCart()
-
-  if (!cart) {
-    return notFound()
-  }
+  if (!cart) return notFound()
 
   const customer = await retrieveCustomer()
 
